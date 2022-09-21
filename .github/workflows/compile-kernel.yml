@@ -90,11 +90,12 @@ jobs:
           kernel_sign: ${{ github.event.inputs.kernel_sign }}
           kernel_config: ${{ github.event.inputs.kernel_config }}
           
-      - name: Upload artifact to Actions
-        uses: kittaakos/upload-artifact-as-is@master
-        if: steps.build.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      - name: Upload firmware directory
+        uses: actions/upload-artifact@main
+        if: steps.organize.outputs.status == 'success' && !cancelled()
         with:
-          path: ${{ env.FILEPATH }}/
+          name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          path: ${{ env.FIRMWARE }}  
           
       - name: Upload OpenWrt Firmware to Release
         uses: ncipollo/release-action@main

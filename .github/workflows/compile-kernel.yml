@@ -89,3 +89,21 @@ jobs:
           kernel_package: ${{ github.event.inputs.kernel_package }}
           kernel_sign: ${{ github.event.inputs.kernel_sign }}
           kernel_config: ${{ github.event.inputs.kernel_config }}
+          
+      - name: Upload artifact to Actions
+        uses: kittaakos/upload-artifact-as-is@master
+        if: steps.build.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+        with:
+          path: ${{ env.FILEPATH }}/
+          
+      - name: Upload OpenWrt Firmware to Release
+        uses: ncipollo/release-action@main
+        if: env.PACKAGED_STATUS == 'success' && !cancelled()
+        with:
+          tag: openwrt_amlogic_s9xxx_lede_${{ env.PACKAGED_OUTPUTDATE }}
+          artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+          allowUpdates: true
+          token: ${{ secrets.GH_TOKEN }}
+          body: |
+            This is OpenWrt firmware for Amlogic s9xxx tv box
+      
